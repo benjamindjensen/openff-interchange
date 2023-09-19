@@ -130,6 +130,18 @@ def to_lammps(interchange: Interchange, file_path: Path | str):
             _write_impropers(lmp_file=lmp_file, interchange=interchange)
 
 
+def _write_atom_type_labels(lmp_file: IO, atom_type_map: dict):
+    """Write the Atom Type Labels section of a LAMMPS data file."""
+    lmp_file.write("Atom Type Labels\n\n")
+
+    for atom_type_idx, smirks in atom_type_map.items():
+        atom_type_label = f"{smirks.id}"
+
+        lmp_file.write(f"{atom_type_idx + 1:d}\t{atom_type_label}\n")
+
+    lmp_file.write("\n")
+
+
 def _write_pair_coeffs(lmp_file: IO, interchange: Interchange, atom_type_map: dict):
     """Write the Pair Coeffs section of a LAMMPS data file."""
     lmp_file.write("Pair Coeffs\n\n")
