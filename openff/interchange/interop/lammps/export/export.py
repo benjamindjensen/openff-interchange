@@ -95,12 +95,14 @@ def to_lammps(interchange: Interchange, file_path: Path | str, include_type_labe
             if n_impropers > 0:
                 _write_improper_type_labels(lmp_file=lmp_file, interchange=interchange)
 
-        lmp_file.write("\nMasses\n\n")
-
         vdw_handler = interchange["vdW"]
         atom_type_map = dict(enumerate(vdw_handler.potentials))
         key_map_inv = dict({v: k for k, v in vdw_handler.key_map.items()})
 
+        if include_type_labels:
+            _write_atom_type_labels(lmp_file=lmp_file, atom_type_map=atom_type_map)
+
+        lmp_file.write("\nMasses\n\n")
         for atom_type_idx, smirks in atom_type_map.items():
             # Find just one topology atom matching this SMIRKS by vdW
             matched_atom_idx = key_map_inv[smirks].atom_indices[0]
