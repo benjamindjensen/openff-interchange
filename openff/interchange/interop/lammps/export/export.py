@@ -11,7 +11,9 @@ from openff.interchange.exceptions import UnsupportedExportError
 from openff.interchange.models import PotentialKey
 
 
-def to_lammps(interchange: Interchange, file_path: Path | str):
+def to_lammps(
+    interchange: Interchange, file_path: Union[Path, str], include_type_labels: bool
+):
     """Write an Interchange object to a LAMMPS data file."""
     if isinstance(file_path, str):
         path = Path(file_path)
@@ -84,12 +86,14 @@ def to_lammps(interchange: Interchange, file_path: Path | str):
 
         lmp_file.write("0.0 0.0 0.0 xy xz yz\n")
 
-        lmp_file.write("\nMasses\n\n")
-
         vdw_handler = interchange["vdW"]
         atom_type_map = dict(enumerate(vdw_handler.potentials))
         key_map_inv = dict({v: k for k, v in vdw_handler.key_map.items()})
 
+        if include_type_labels:
+            _write_atom_type_labels(lmp_file=lmp_file, atom_type_map=atom_type_map)
+
+        lmp_file.write("\nMasses\n\n")
         for atom_type_idx, smirks in atom_type_map.items():
             # Find just one topology atom matching this SMIRKS by vdW
             matched_atom_idx = key_map_inv[smirks].atom_indices[0]
