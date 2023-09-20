@@ -305,11 +305,9 @@ class Interchange(DefaultModel):
 
         if backend == "nglview":
             if include_virtual_sites:
-
                 return self._visualize_nglview(include_virtual_sites=True)
 
             else:
-
                 # Interchange.topology might have its own positions;
                 # just use Interchange.positions
                 original_positions = self.topology.get_positions()
@@ -337,7 +335,6 @@ class Interchange(DefaultModel):
                 return widget
 
         else:
-
             raise UnsupportedExportError
 
     @requires_package("nglview")
@@ -526,12 +523,14 @@ class Interchange(DefaultModel):
             gro_file=file_path,
         ).to_gro(decimal=decimal)
 
-    def to_lammps(self, file_path: Path | str, writer="internal"):
+    def to_lammps(
+        self, file_path: Union[Path, str], writer="internal", include_type_labels=False
+    ):
         """Export this Interchange to a LAMMPS data file."""
         if writer == "internal":
             from openff.interchange.interop.lammps import to_lammps
 
-            to_lammps(self, file_path)
+            to_lammps(self, file_path, include_type_labels)
         else:
             raise UnsupportedExportError
 
