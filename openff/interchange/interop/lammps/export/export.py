@@ -101,8 +101,11 @@ def to_lammps(interchange: Interchange, file_path: Path | str, include_type_labe
 
         if include_type_labels:
             _write_atom_type_labels(lmp_file=lmp_file, atom_type_map=atom_type_map)
+            if n_bonds > 0:
+                _write_bond_type_labels(lmp_file=lmp_file, interchange=interchange)
 
         lmp_file.write("\nMasses\n\n")
+
         for atom_type_idx, smirks in atom_type_map.items():
             # Find just one topology atom matching this SMIRKS by vdW
             matched_atom_idx = key_map_inv[smirks].atom_indices[0]
