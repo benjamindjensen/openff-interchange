@@ -103,6 +103,8 @@ def to_lammps(interchange: Interchange, file_path: Path | str, include_type_labe
             _write_atom_type_labels(lmp_file=lmp_file, atom_type_map=atom_type_map)
             if n_bonds > 0:
                 _write_bond_type_labels(lmp_file=lmp_file, interchange=interchange)
+            if n_angles > 0:
+                _write_angle_type_labels(lmp_file=lmp_file, interchange=interchange)
 
         lmp_file.write("\nMasses\n\n")
 
@@ -217,6 +219,21 @@ def _write_improper_type_labels(lmp_file: IO, interchange: Interchange):
         improper_type_label = f"{smirks.id}"
 
         lmp_file.write(f"{improper_type_idx + 1:d}\t{improper_type_label}\n")
+
+    lmp_file.write("\n")
+
+
+def _write_angle_type_labels(lmp_file: IO, interchange: Interchange):
+    """Write the Angle Type Labels section of a LAMMPS data file."""
+    lmp_file.write("Angle Type Labels\n\n")
+
+    angle_handler = interchange["Angles"]
+    angle_type_map = dict(enumerate(angle_handler.potentials))
+
+    for angle_type_idx, smirks in angle_type_map.items():
+        angle_type_label = f"{smirks.id}"
+
+        lmp_file.write(f"{angle_type_idx+1:d}\t{angle_type_label}\n")
 
     lmp_file.write("\n")
 
