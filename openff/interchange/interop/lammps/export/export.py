@@ -96,6 +96,10 @@ def to_lammps(
                 _write_bond_type_labels(lmp_file=lmp_file, interchange=interchange)
             if n_angles > 0:
                 _write_angle_type_labels(lmp_file=lmp_file, interchange=interchange)
+            if n_propers > 0:
+                _write_proper_type_labels(lmp_file=lmp_file, interchange=interchange)
+            if n_impropers > 0:
+                _write_improper_type_labels(lmp_file=lmp_file, interchange=interchange)
 
         lmp_file.write("\nMasses\n\n")
 
@@ -177,6 +181,36 @@ def _write_angle_type_labels(lmp_file: IO, interchange: Interchange):
         angle_type_label = f"{smirks.id}"
 
         lmp_file.write(f"{angle_type_idx+1:d}\t{angle_type_label}\n")
+
+    lmp_file.write("\n")
+
+
+def _write_proper_type_labels(lmp_file: IO, interchange: Interchange):
+    """Write the Dihedral Type Labels section of a LAMMPS data file."""
+    lmp_file.write("Dihedral Type Labels\n\n")
+
+    proper_handler = interchange["ProperTorsions"]
+    proper_type_map = dict(enumerate(proper_handler.potentials))
+
+    for proper_type_idx, smirks in proper_type_map.items():
+        proper_type_label = f"{smirks.id}mult:{smirks.mult}"
+
+        lmp_file.write(f"{proper_type_idx+1:d}\t{proper_type_label}\n")
+
+    lmp_file.write("\n")
+
+
+def _write_improper_type_labels(lmp_file: IO, interchange: Interchange):
+    """Write the Improper Type Labels section of a LAMMPS data file."""
+    lmp_file.write("Improper Type Labels\n\n")
+
+    improper_handler = interchange["ImproperTorsions"]
+    improper_type_map = dict(enumerate(improper_handler.potentials))
+
+    for improper_type_idx, smirks in improper_type_map.items():
+        improper_type_label = f"{smirks.id}"
+
+        lmp_file.write(f"{improper_type_idx+1:d}\t{improper_type_label}\n")
 
     lmp_file.write("\n")
 
