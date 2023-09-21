@@ -99,8 +99,11 @@ def to_lammps(
 
         if include_type_labels:
             _write_atom_type_labels(lmp_file=lmp_file, atom_type_map=atom_type_map)
+            if n_bonds > 0:
+                _write_bond_type_labels(lmp_file=lmp_file, interchange=interchange)
 
         lmp_file.write("\nMasses\n\n")
+
         for atom_type_idx, smirks in atom_type_map.items():
             # Find just one topology atom matching this SMIRKS by vdW
             matched_atom_idx = key_map_inv[smirks].atom_indices[0]
@@ -149,6 +152,21 @@ def _write_atom_type_labels(lmp_file: IO, atom_type_map: dict):
         atom_type_label = f"{smirks.id}"
 
         lmp_file.write(f"{atom_type_idx + 1:d}\t{atom_type_label}\n")
+
+    lmp_file.write("\n")
+
+
+def _write_bond_type_labels(lmp_file: IO, interchange: Interchange):
+    """Write the Bond Type Labels section of a LAMMPS data file."""
+    lmp_file.write("Bond Type Labels\n\n")
+
+    bond_handler = interchange["Bonds"]
+    bond_type_map = dict(enumerate(bond_handler.potentials))
+
+    for bond_type_idx, smirks in bond_type_map.items():
+        bond_type_label = f"{smirks.id}"
+
+        lmp_file.write(f"{bond_type_idx+1:d}\t{bond_type_label}\n")
 
     lmp_file.write("\n")
 
