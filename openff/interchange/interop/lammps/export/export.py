@@ -86,12 +86,8 @@ def to_lammps(
 
         lmp_file.write("0.0 0.0 0.0 xy xz yz\n")
 
-        vdw_handler = interchange["vdW"]
-        atom_type_map = dict(enumerate(vdw_handler.potentials))
-        key_map_inv = dict({v: k for k, v in vdw_handler.key_map.items()})
-
         if include_type_labels:
-            _write_atom_type_labels(lmp_file=lmp_file, atom_type_map=atom_type_map)
+            _write_atom_type_labels(lmp_file=lmp_file, interchange=interchange)
             if n_bonds > 0:
                 _write_bond_type_labels(lmp_file=lmp_file, interchange=interchange)
             if n_angles > 0:
@@ -102,6 +98,10 @@ def to_lammps(
                 _write_improper_type_labels(lmp_file=lmp_file, interchange=interchange)
 
         lmp_file.write("\nMasses\n\n")
+
+        vdw_handler = interchange["vdW"]
+        atom_type_map = dict(enumerate(vdw_handler.potentials))
+        key_map_inv = dict({v: k for k, v in vdw_handler.key_map.items()})
 
         for atom_type_idx, smirks in atom_type_map.items():
             # Find just one topology atom matching this SMIRKS by vdW
@@ -143,9 +143,12 @@ def to_lammps(
             _write_impropers(lmp_file=lmp_file, interchange=interchange)
 
 
-def _write_atom_type_labels(lmp_file: IO, atom_type_map: dict):
+def _write_atom_type_labels(lmp_file: IO, interchange: Interchange):
     """Write the Atom Type Labels section of a LAMMPS data file."""
     lmp_file.write("Atom Type Labels\n\n")
+
+    vdw_handler = interchange["vdW"]
+    atom_type_map = dict(enumerate(vdw_handler.potentials))
 
     for atom_type_idx, smirks in atom_type_map.items():
         atom_type_label = f"{smirks.id}"
