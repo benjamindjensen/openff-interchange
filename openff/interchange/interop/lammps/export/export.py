@@ -237,7 +237,7 @@ def _write_angle_type_labels(lmp_file: IO, interchange: Interchange):
     for angle_type_idx, smirks in angle_type_map.items():
         angle_type_label = f"{smirks.id}"
 
-        lmp_file.write(f"{angle_type_idx+1:d}\t{angle_type_label}\n")
+        lmp_file.write(f"{angle_type_idx + 1:d}\t{angle_type_label}\n")
 
     lmp_file.write("\n")
 
@@ -252,7 +252,7 @@ def _write_proper_type_labels(lmp_file: IO, interchange: Interchange):
     for proper_type_idx, smirks in proper_type_map.items():
         proper_type_label = f"{smirks.id}mult:{smirks.mult}"
 
-        lmp_file.write(f"{proper_type_idx+1:d}\t{proper_type_label}\n")
+        lmp_file.write(f"{proper_type_idx + 1:d}\t{proper_type_label}\n")
 
     lmp_file.write("\n")
 
@@ -267,7 +267,7 @@ def _write_improper_type_labels(lmp_file: IO, interchange: Interchange):
     for improper_type_idx, smirks in improper_type_map.items():
         improper_type_label = f"{smirks.id}"
 
-        lmp_file.write(f"{improper_type_idx+1:d}\t{improper_type_label}\n")
+        lmp_file.write(f"{improper_type_idx + 1:d}\t{improper_type_label}\n")
 
     lmp_file.write("\n")
 
