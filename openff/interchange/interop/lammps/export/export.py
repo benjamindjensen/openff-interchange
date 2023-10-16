@@ -91,7 +91,7 @@ def to_lammps(
             ),
         )
 
-        lmp_file.write("0.0 0.0 0.0 xy xz yz\n")
+        lmp_file.write("0.0 0.0 0.0 xy xz yz\n\n")
 
         if include_type_labels:
             _write_atom_type_labels(lmp_file=lmp_file, interchange=interchange)
