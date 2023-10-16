@@ -84,7 +84,7 @@ def to_lammps(
             f"{z_min:.10g} {z_min + L_z:.10g} zlo zhi\n",
         )
 
-        lmp_file.write("0.0 0.0 0.0 xy xz yz\n")
+        lmp_file.write("0.0 0.0 0.0 xy xz yz\n\n")
 
         if include_type_labels:
             _write_atom_type_labels(lmp_file=lmp_file, interchange=interchange)
