@@ -12,7 +12,7 @@ from openff.interchange.models import PotentialKey
 
 
 def to_lammps(
-    interchange: Interchange, file_path: Union[Path, str], include_type_labels: bool
+    interchange: Interchange, file_path: Path | str, include_type_labels: bool
 ):
     """Write an Interchange object to a LAMMPS data file."""
     if isinstance(file_path, str):
