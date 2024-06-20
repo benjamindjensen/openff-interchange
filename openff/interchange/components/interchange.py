@@ -512,7 +512,7 @@ class Interchange(DefaultModel):
         ).to_gro(decimal=decimal)
 
     def to_lammps(
-        self, file_path: Union[Path, str], writer="internal", include_type_labels=False
+        self, file_path: Path | str, writer="internal", include_type_labels=False
     ):
         """Export this Interchange to a LAMMPS data file."""
         if writer == "internal":
