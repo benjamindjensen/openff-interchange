@@ -175,6 +175,19 @@ class TestGROMACSGROFile(_NeedsGROMACS):
             for residue in protein.residues:
                 residue.residue_number = str(int(residue.residue_number) + offset)
 
+        if offset_residue_ids:
+            offset = random.randint(10, 20)
+
+            for atom in protein.atoms:
+                atom.metadata["residue_number"] = str(
+                    int(atom.metadata["residue_number"]) + offset,
+                )
+
+            # Need to manually update residues _and_ atoms
+            # https://github.com/openforcefield/openff-toolkit/issues/1921
+            for residue in protein.residues:
+                residue.residue_number = str(int(residue.residue_number) + offset)
+
         ff14sb = ForceField("ff14sb_off_impropers_0.0.3.offxml")
 
         out = Interchange.from_smirnoff(
