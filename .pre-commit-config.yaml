@@ -12,7 +12,11 @@ repos:
   hooks:
   - id: add-trailing-comma
 - repo: https://github.com/astral-sh/ruff-pre-commit
+<<<<<<< HEAD
   rev: v0.11.6
+=======
+  rev: v0.5.7
+>>>>>>> 8914df1c ([pre-commit.ci] pre-commit autoupdate)
   hooks:
     - id: ruff
       args: ["--fix"]
