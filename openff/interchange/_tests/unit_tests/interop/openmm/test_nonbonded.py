@@ -146,6 +146,27 @@ class TestCutoffElectrostatics:
         else:
             pytest.fail("Found no `NonbondedForce`")
 
+    def test_vdw_electrostatics_cutoff_mismatch(
+        self,
+        sage,
+        basic_top,
+    ):
+        import random
+
+        out = sage.create_interchange(basic_top)
+
+        out["Electrostatics"].periodic_potential = "reaction-field"
+        out["Electrostatics"].cutoff = out["vdW"].cutoff
+
+        for key in ("vdW", "Electrostatics"):
+            out[key].cutoff *= random.random()
+
+        with pytest.raises(
+            UnsupportedExportError,
+            match="cutoffs must match",
+        ):
+            out.to_openmm(combine_nonbonded_forces=True)
+
 
 @skip_if_missing("openmm")
 class TestEwaldSettings:
