@@ -121,6 +121,7 @@ class TestCutoffElectrostatics:
         self,
         sage,
         basic_top,
+        periodic,
         combine,
     ):
         import openmm
@@ -128,10 +129,23 @@ class TestCutoffElectrostatics:
 
         out = sage.create_interchange(basic_top)
 
-        assert out.box is not None
-        out["Electrostatics"].periodic_potential = "reaction-field"
+        if periodic:
+            out["Electrostatics"].periodic_potential = "reaction-field"
+        else:
+            out["Electrostatics"].nonperiodic_potential = "reaction-field"
+            out.box = None
+
+        assert (out.box is not None) == periodic
 
         out["Electrostatics"].cutoff = out["vdW"].cutoff
+
+        if combine and not periodic:
+            with pytest.raises(
+                UnsupportedCutoffMethodError,
+                match="Combination of",
+            ):
+                system = out.to_openmm(combine_nonbonded_forces=combine)
+            return
 
         system = out.to_openmm(combine_nonbonded_forces=combine)
 
