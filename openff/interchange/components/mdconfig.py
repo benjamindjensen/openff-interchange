@@ -269,7 +269,6 @@ class MDConfig(DefaultModel):
         ) = _get_coeffs_of_constrained_bonds_and_angles(interchange)
 
         with open(input_file, "w") as lmp:
-
             if self.switching_function is not None:
                 if self.switching_distance.m > 0.0:
                     warnings.warn(
@@ -288,14 +287,14 @@ class MDConfig(DefaultModel):
             )
 
             if len(interchange["Bonds"].key_map) > 0:
-                lmp.write("bond_style hybrid harmonic\n")
+                lmp.write("bond_style harmonic\n")
 
             if len(interchange["Angles"].key_map) > 0:
-                lmp.write("angle_style hybrid harmonic\n")
+                lmp.write("angle_style harmonic\n")
 
             try:
                 if len(interchange["ProperTorsions"].key_map) > 0:
-                    lmp.write("dihedral_style hybrid fourier\n")
+                    lmp.write("dihedral_style fourier\n")
             except LookupError:
                 # no torsions here
                 pass
