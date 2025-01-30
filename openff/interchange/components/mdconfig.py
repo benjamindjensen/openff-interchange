@@ -272,16 +272,6 @@ class MDConfig(_BaseModel):
         # Construct the input file in memory so nothing is written to disk if an
         # error is encountered.
         with StringIO() as lmp:
-            if self.switching_function is not None:
-                if self.switching_distance.m > 0.0:
-                    warnings.warn(
-                        f"A switching distance {self.switching_distance} was specified by the "
-                        "force field, but LAMMPS may not implement a switching function as "
-                        "specified by SMIRNOFF. Using a hard cut-off instead. Non-bonded "
-                        "interactions will be affected.",
-                        SwitchingFunctionNotImplementedWarning,
-                    )
-
             lmp.write(
                 "units real\natom_style full\n\ndimension 3\nboundary p p p\n\n",
             )
@@ -337,14 +327,27 @@ class MDConfig(_BaseModel):
             vdw_cutoff = round(self.vdw_cutoff.m_as(unit.angstrom), 4)
             coul_cutoff = round(self.coul_cutoff.m_as(unit.angstrom), 4)
 
-            if self.coul_method == _PME:
-                lmp.write(f"pair_style lj/cut/coul/long {vdw_cutoff} {coul_cutoff}\n")
-            elif self.coul_method == "cutoff":
-                lmp.write(f"pair_style lj/cut/coul/cut {vdw_cutoff} {coul_cutoff}\n")
+            if self.switching_function:
+                switching_distance = round(self.switching_distance.m_as(unit.angstrom), 4)
+                if self.coul_method == _PME:
+                    lmp.write(f"pair_style lj/charmmfsw/coul/long {switching_distance} {vdw_cutoff} {coul_cutoff}\n")
+                elif self.coul_method == "cutoff":
+                    lmp.write(
+                        f"pair_style lj/charmmfsw/coul/charmmfsh {switching_distance} {vdw_cutoff} {coul_cutoff}\n"
+                    )
+                else:
+                    raise UnsupportedExportError(
+                        f"Unsupported electrostatics method {self.coul_method}",
+                    )
             else:
-                raise UnsupportedExportError(
-                    f"Unsupported electrostatics method {self.coul_method}",
-                )
+                if self.coul_method == _PME:
+                    lmp.write(f"pair_style lj/cut/coul/long {vdw_cutoff} {coul_cutoff}\n")
+                elif self.coul_method == "cutoff":
+                    lmp.write(f"pair_style lj/cut/coul/cut {vdw_cutoff} {coul_cutoff}\n")
+                else:
+                    raise UnsupportedExportError(
+                        f"Unsupported electrostatics method {self.coul_method}",
+                    )
 
             if self.mixing_rule == "lorentz-berthelot":
                 lmp.write("pair_modify mix arithmetic tail yes\n\n")
@@ -382,7 +385,7 @@ class MDConfig(_BaseModel):
             if self.coul_method == _PME:
                 # Note: LAMMPS will error out if using kspace on something with all zero charges,
                 # so this may not work if all partial charges are zero
-                lmp.write("kspace_style pppm 1e-4\n")
+                lmp.write("kspace_style pppm 1e-5\n")
 
             lmp.write("run 0\n")
 
