@@ -333,7 +333,7 @@ class MDConfig(_BaseModel):
                     lmp.write(f"pair_style lj/charmmfsw/coul/long {switching_distance} {vdw_cutoff} {coul_cutoff}\n")
                 elif self.coul_method == "cutoff":
                     lmp.write(
-                        f"pair_style lj/charmmfsw/coul/charmmfsh {switching_distance} {vdw_cutoff} {coul_cutoff}\n"
+                        f"pair_style lj/charmmfsw/coul/charmmfsh {switching_distance} {vdw_cutoff} {coul_cutoff}\n",
                     )
                 else:
                     raise UnsupportedExportError(
